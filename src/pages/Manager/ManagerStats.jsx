@@ -1,11 +1,11 @@
 import React from 'react';
 
-const WaitlistTable = () => {
+const ManagerStats = () => {
       return (
             <div>
-                  <h1>asld</h1>
+                  
             </div>
       );
 };
 
-export default WaitlistTable;
+export default ManagerStats;

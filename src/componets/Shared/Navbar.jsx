@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, NavLink } from "react-router";
 import useAuth from "../../hooks/useAuth";
+import Logo from "./logo";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -35,11 +36,39 @@ const Navbar = () => {
           All Events
         </NavLink>
       </li>
+      <li>
+        <NavLink
+          to="/about"
+          className={({ isActive }) =>
+            `px-6 py-2 rounded-full transition-all duration-300 font-medium ${
+              isActive
+                ? "bg-primary text-primary-content font-bold"
+                : "hover:bg-primary hover:text-primary-content text-base-content/80"
+            }`
+          }
+        >
+          About
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/contact"
+          className={({ isActive }) =>
+            `px-6 py-2 rounded-full transition-all duration-300 font-medium ${
+              isActive
+                ? "bg-primary text-primary-content font-bold"
+                : "hover:bg-primary hover:text-primary-content text-base-content/80"
+            }`
+          }
+        >
+          Contact
+        </NavLink>
+      </li>
     </>
   );
 
   return (
-    <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-6xl">
+    <div className="fixed top-1 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-6xl">
       <div className="navbar bg-white/80 backdrop-blur-md rounded-full shadow-lg px-6 border border-white/20">
         <div className="navbar-start">
           <div className="dropdown">
@@ -70,11 +99,8 @@ const Navbar = () => {
               {navOptions}
             </ul>
           </div>
-          <Link
-            to="/"
-            className="text-xl font-extrabold tracking-tighter text-secondary px-4"
-          >
-            EventHive
+          <Link to="/">
+            <Logo />
           </Link>
         </div>
         <div className="navbar-center hidden lg:flex">
@@ -103,7 +129,7 @@ const Navbar = () => {
                 className="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-100 rounded-2xl w-52 border border-base-200"
               >
                 <li>
-                  <Link to="/dashboard/user-home" className="justify-between">
+                  <Link to="/dashboard" className="justify-between">
                     Dashboard
                     <span className="badge badge-primary badge-sm">New</span>
                   </Link>
