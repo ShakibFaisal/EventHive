@@ -61,18 +61,20 @@ const Login = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto py-50">
+    <div className="max-w-6xl mx-auto py-40">
       {/* Heading */}
       <div className="text-center mb-14">
-        <h1 className="text-3xl md:text-4xl lg:text-6xl text-secondary font-black">
+        <h1 className="text-3xl md:text-4xl lg:text-6xl text-secondary font-semibold">
           Welcome Back!
         </h1>
-        <p className="text-2xl mt-5">Login with EventHive</p>
+        <p className="text-xl text-base-content mt-8">
+          Log in to manage your events and bookings.
+        </p>
       </div>
 
       {/* Centered Form */}
       <div className="flex justify-center">
-        <div className="card w-full max-w-xl shadow-2xl bg-white p-10">
+        <div className="card w-full max-w-xl shadow-2xl bg-base-300 p-10">
           <div className="card-body">
             <form onSubmit={handleSubmit(handleLogin)}>
               <fieldset className="fieldset">
@@ -81,8 +83,8 @@ const Login = () => {
                 <input
                   type="email"
                   {...register('email', { required: true })}
-                  className="input input-bordered w-full bg-white"
-                  placeholder="Email"
+                  className="input input-bordered w-full bg-base-100"
+                  placeholder="Your Email"
                 />
                 {errors.email && (
                   <p className="text-red-500">Email is required</p>
@@ -98,7 +100,7 @@ const Login = () => {
                       minLength: 6,
                       pattern: /^(?=.*[a-z])(?=.*[A-Z]).+$/,
                     })}
-                    className="input input-bordered w-full bg-white"
+                    className="input input-bordered w-full bg-base-100"
                     placeholder="Password"
                   />
                   <button
@@ -142,7 +144,7 @@ const Login = () => {
                 <Link
                   state={location?.state}
                   to="/register"
-                  className="text-[#73863a] underline"
+                  className="text-[#80ba21] underline"
                 >
                   Register
                 </Link>

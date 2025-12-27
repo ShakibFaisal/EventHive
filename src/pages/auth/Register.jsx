@@ -76,18 +76,20 @@ const Register = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto py-50">
+    <div className="max-w-6xl mx-auto py-40">
       {/* Heading */}
       <div className="text-center mb-14">
         <h1 className="text-3xl md:text-4xl lg:text-6xl text-secondary font-semibold">
           Get in touch <br /> with us in seconds
         </h1>
-        <p className="text-2xl mt-5">Register with EventHive</p>
+        <p className="text-xl text-base-content mt-8">
+          Plan smarter. Host better. Join EventHive today.
+        </p>
       </div>
 
       {/* Form Center Wrapper */}
       <div className="flex justify-center">
-        <div className="card w-full max-w-xl shadow-2xl bg-white p-10">
+        <div className="card w-full max-w-xl shadow-2xl bg-base-300 p-10">
           <div className="card-body">
             <form onSubmit={handleSubmit(handleRegistration)}>
               <fieldset className="fieldset">
@@ -96,7 +98,8 @@ const Register = () => {
                 <input
                   type="text"
                   {...register('name', { required: true })}
-                  className="input input-bordered w-full bg-white"
+                  className="input input-bordered w-full bg-base-100
+"
                   placeholder="Your Name"
                 />
                 {errors.name && (
@@ -108,7 +111,8 @@ const Register = () => {
                 <input
                   type="email"
                   {...register('email', { required: true })}
-                  className="input input-bordered w-full bg-white"
+                  className="input input-bordered w-full bg-base-100
+"
                   placeholder="Your Email"
                 />
                 {errors.email && (
@@ -120,7 +124,8 @@ const Register = () => {
                 <input
                   type="file"
                   {...register('photo', { required: true })}
-                  className="file-input file-input-bordered w-full bg-white"
+                  className="file-input file-input-bordered w-full bg-base-100
+"
                 />
                 {errors.photo && (
                   <p className="text-red-500">Photo is required</p>
@@ -136,7 +141,8 @@ const Register = () => {
                       minLength: 6,
                       pattern: /^(?=.*[a-z])(?=.*[A-Z]).+$/,
                     })}
-                    className="input input-bordered w-full bg-white"
+                    className="input input-bordered w-full bg-base-100
+"
                     placeholder="Password"
                   />
                   <button
@@ -171,7 +177,7 @@ const Register = () => {
                 <Link
                   state={location?.state}
                   to="/login"
-                  className="text-[#73863a] underline"
+                  className="text-[#80ba21] underline"
                 >
                   Login
                 </Link>

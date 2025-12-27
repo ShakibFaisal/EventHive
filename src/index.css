@@ -30,6 +30,36 @@
   --rounded-btn: 9999px;         /* rounded-full (Pill) */
 }
 
+@plugin "daisyui/theme" {
+  name: "dark";
+
+  /* Brand */
+  --color-primary: #A3E635;          /* Same lime */
+  --color-primary-content: #0F172A; /* Dark text on lime */
+  --color-secondary: #E5E7EB;        /* Light gray headings */
+  --color-accent: #1F2933;
+
+  /* Backgrounds */
+  --color-base-100: #0F172A;         /* Main background (charcoal navy) */
+  --color-base-200: #111827;         /* Cards */
+  --color-base-300: #1F2933;         /* Borders / separators */
+
+  /* Text */
+  --color-base-content: #E5E7EB;     /* Main text */
+  --color-base-content-secondary: #9CA3AF; /* Muted text */
+
+  /* Status */
+  --color-info: #60A5FA;
+  --color-success: #A3E635;
+  --color-warning: #FACC15;
+  --color-error: #EF4444;
+
+  /* Radius */
+  --rounded-box: 1.5rem;
+  --rounded-btn: 9999px;
+}
+
+
 /* Custom Base Styles for Typography */
 @layer base {
   body {

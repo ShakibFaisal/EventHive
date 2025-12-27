@@ -1,21 +1,21 @@
-import React from "react";
-import { Link, NavLink, useNavigate } from "react-router";
-import useAuth from "../../hooks/useAuth";
+import React from 'react';
+import { Link, NavLink, useNavigate } from 'react-router';
+import useAuth from '../../hooks/useAuth';
+import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
   const { user, signout } = useAuth();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleSignOut = () => {
     signout()
       .then(() => {
-      navigate('login')
+        navigate('login');
       })
       .catch(error => {
-      console.log(error)
-    })
-  }
-
+        console.log(error);
+      });
+  };
 
   const navOptions = (
     <>
@@ -25,8 +25,8 @@ const Navbar = () => {
           className={({ isActive }) =>
             `px-6 py-2 rounded-full transition-all duration-300 font-medium ${
               isActive
-                ? "bg-primary text-primary-content font-bold"
-                : "hover:bg-primary hover:text-primary-content text-base-content/80"
+                ? 'bg-primary text-primary-content font-bold'
+                : 'hover:bg-primary hover:text-primary-content text-base-content/80'
             }`
           }
         >
@@ -39,8 +39,8 @@ const Navbar = () => {
           className={({ isActive }) =>
             `px-6 py-2 rounded-full transition-all duration-300 font-medium ${
               isActive
-                ? "bg-primary text-primary-content font-bold"
-                : "hover:bg-primary hover:text-primary-content text-base-content/80"
+                ? 'bg-primary text-primary-content font-bold'
+                : 'hover:bg-primary hover:text-primary-content text-base-content/80'
             }`
           }
         >
@@ -93,6 +93,11 @@ const Navbar = () => {
           <ul className="menu menu-horizontal px-1 gap-2">{navOptions}</ul>
         </div>
         <div className="navbar-end">
+          {/* ahsan */}
+          <div className='mr-6'>
+            <ThemeToggle></ThemeToggle>
+          </div>
+
           {user ? (
             <div className="dropdown dropdown-end">
               <div
