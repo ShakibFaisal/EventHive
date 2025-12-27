@@ -33,7 +33,7 @@ const AllEvents = () => {
     .sort((a, b) => {
       if (priceSort === "low") return a.price - b.price;
       if (priceSort === "high") return b.price - a.price;
-      return 0; // no sorting
+      return 0; 
     });
 
 
