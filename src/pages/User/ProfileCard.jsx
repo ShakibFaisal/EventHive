@@ -13,50 +13,72 @@ import {
   Loader2,
 } from "lucide-react";
 import Swal from "sweetalert2";
-import UseAxiosSecure from "../../hooks/UseAxiosSecure";
+import UseAxiosSecure from "../../hooks/useAxiosSecure";
 
 const ProfileCard = () => {
   const { user: authUser, loading: authLoading } = useAuth();
   const axiosSecure = UseAxiosSecure();
 
-  // 1. Fetch User Data with Loading State
+  // 1. Fetch User Role and Status from backend
   const {
     data: userData,
     isLoading: dataLoading,
     refetch,
   } = useQuery({
     queryKey: ["user-profile", authUser?.email],
-    enabled: !!authUser?.email && !authLoading, // Auth ready হওয়ার পর কল হবে
+    enabled: !!authUser?.email && !authLoading,
     queryFn: async () => {
-      const res = await axiosSecure.get(`/users/${authUser?.email}`);
-      console.log("DB User Data:", res.data); // 🔍 Check Console for this
+      const res = await axiosSecure.get(`/users/role/${authUser?.email}`);
+      console.log("DB User Data:", res.data);
       return res.data;
     },
   });
 
-  // 2. Loading Spinner (খুবই জরুরি)
-  // ডাটা না আসা পর্যন্ত লোডিং দেখাবে, তাই ভুল ভাল রোল দেখাবে না
-  // if (authLoading || dataLoading) {
-  //   return (
-  //     <div className="min-h-screen flex justify-center items-center bg-[#F9FAFB]">
-  //       <Loader2 className="animate-spin text-gray-400 w-10 h-10" />
-  //     </div>
-  //   );
-  // }
+  // 2. Fetch user's bookings count
+  const { data: bookings = [] } = useQuery({
+    queryKey: ["my-bookings-count", authUser?.email],
+    enabled: !!authUser?.email && !authLoading,
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/bookings/${authUser?.email}`);
+      return res.data || [];
+    },
+  });
 
-  // 3. User Object Creation (Safe Merge)
+  // 3. Fetch user's events count (for managers)
+  const { data: myEvents = [] } = useQuery({
+    queryKey: ["my-events-count", authUser?.email],
+    enabled:
+      !!authUser?.email &&
+      !authLoading &&
+      (userData?.role === "manager" || userData?.role === "admin"),
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/events/manager/${authUser?.email}`);
+      return res.data || [];
+    },
+  });
+
+  // 4. Loading Spinner
+  if (authLoading || dataLoading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-[#F9FAFB]">
+        <Loader2 className="animate-spin text-gray-400 w-10 h-10" />
+      </div>
+    );
+  }
+
+  // 5. User Object Creation (Safe Merge)
   const user = {
-    displayName: userData?.name || authUser?.displayName || "User",
-    email: userData?.email || authUser?.email,
-    photoURL: userData?.image || authUser?.photoURL,
-    uid: userData?._id || authUser?.uid,
+    displayName: authUser?.displayName || "User",
+    email: authUser?.email,
+    photoURL: authUser?.photoURL,
+    uid: authUser?.uid,
     role: userData?.role || "user",
     status: userData?.status || "verified",
-    totalBookings: userData?.totalBookings || 0,
-    totalEvents: userData?.totalEvents || 0,
+    totalBookings: bookings.filter((b) => b.status === "confirmed").length || 0,
+    totalEvents: myEvents.length || 0,
   };
 
-  // 4. Role Theme Configuration
+  // 6. Role Theme Configuration
   const roleTheme = {
     admin: {
       text: "text-purple-600",
@@ -71,7 +93,7 @@ const ProfileCard = () => {
       bg: "bg-blue-50",
       border: "border-blue-100",
       ring: "ring-blue-50",
-      label: "Organizer", // Label change for manager
+      label: "Organizer",
       icon: UserCheck,
     },
     user: {
@@ -103,6 +125,11 @@ const ProfileCard = () => {
       }
     } catch (err) {
       console.error(err);
+      Swal.fire({
+        title: "Error",
+        text: err.response?.data?.message || "Failed to send request",
+        icon: "error",
+      });
     }
   };
 
@@ -148,16 +175,17 @@ const ProfileCard = () => {
                 className={`mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${currentTheme.bg} ${currentTheme.text} ${currentTheme.border}`}
               >
                 <RoleIcon size={12} />
-                {currentTheme.label} {/* Dynamic Label */}
+                {currentTheme.label}
               </div>
             </div>
           </div>
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mt-8 py-4 border-t border-b border-gray-50">
-            {/* Stats Items... (Same as before) */}
             <div className="text-center">
-              <span className="block text-lg font-bold text-gray-900">0</span>
+              <span className="block text-lg font-bold text-gray-900">
+                {user.totalBookings}
+              </span>
               <span className="text-[10px] text-gray-400 font-bold uppercase">
                 Bookings
               </span>
@@ -171,7 +199,9 @@ const ProfileCard = () => {
               </span>
             </div>
             <div className="text-center">
-              <span className="block text-lg font-bold text-gray-900">0</span>
+              <span className="block text-lg font-bold text-gray-900">
+                {user.totalEvents}
+              </span>
               <span className="text-[10px] text-gray-400 font-bold uppercase">
                 Events
               </span>
@@ -189,12 +219,11 @@ const ProfileCard = () => {
               <button
                 onClick={handleRequest}
                 disabled={user.status === "requested"}
-                className={`w-full py-3 px-4 border text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2
-                    ${
-                      user.status === "requested"
-                        ? "bg-gray-50 text-gray-400"
-                        : "bg-white hover:bg-gray-50 text-gray-700"
-                    }`}
+                className={`w-full py-3 px-4 border text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 ${
+                  user.status === "requested"
+                    ? "bg-gray-50 text-gray-400 cursor-not-allowed"
+                    : "bg-white hover:bg-gray-50 text-gray-700"
+                }`}
               >
                 {user.status === "requested"
                   ? "Request Pending..."
