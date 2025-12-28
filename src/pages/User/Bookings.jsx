@@ -73,8 +73,17 @@ const Bookings = () => {
             icon: "error",
           });
         }
+      } catch (error) {
+        console.error("Delete error:", error);
+        console.error("Error response:", error.response?.data);
+        Swal.fire({
+          title: "Error!",
+          text: error.response?.data?.message || error.message || "Failed to cancel booking.",
+          icon: "error",
+          customClass: { popup: "rounded-2xl", confirmButton: "rounded-xl" },
+        });
       }
-    });
+    }
   };
 
   // =======================

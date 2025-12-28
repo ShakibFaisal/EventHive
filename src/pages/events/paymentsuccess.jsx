@@ -42,11 +42,19 @@ const PaymentSuccess = () => {
       return;
     }
 
-    (async () => {
+    // Wait for Firebase token to be fetched before making API call
+    const verifyPayment = async () => {
       try {
+        // Get fresh token
+        const token = await user.getIdToken(true);
+        console.log("Token obtained:", token ? "Yes" : "No");
+        console.log("Verifying payment with session ID:", sessionId);
+
         const res = await axiosSecure.post("/bookings/session-status", {
           sessionId,
         });
+        console.log("Payment verification response:", res.data);
+
         if (res.data?.success) {
           setBooking(res.data.booking || null);
           setInfoMessage(res.data.message || "Payment verified");
@@ -54,11 +62,20 @@ const PaymentSuccess = () => {
           setError(res.data?.message || "Payment not completed");
         }
       } catch (err) {
+        console.error("Payment verification error:", err);
+        console.error("Error response:", err.response);
         setError(err.response?.data?.message || err.message || "Server error");
       } finally {
         setLoading(false);
       }
-    })();
+    };
+
+    // Small delay to ensure token is set in axios interceptor
+    const timer = setTimeout(() => {
+      verifyPayment();
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [location.search, axiosSecure, authLoading, user]);
 
   // Show loading while auth is loading OR while verifying payment

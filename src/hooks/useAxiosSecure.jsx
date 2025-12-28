@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { AuthContext } from "../Provider/AuthContext";
 
@@ -10,45 +10,44 @@ const axiosSecure = axios.create({
 const UseAxiosSecure = () => {
   const { user, logOut } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [token, setToken] = useState(null);
 
   useEffect(() => {
-    // Get Firebase ID token
-    const getToken = async () => {
-      if (user) {
-        try {
-          const idToken = await user.getIdToken();
-          setToken(idToken);
-        } catch (error) {
-          console.error("Error getting token:", error);
+    // intercept request - FETCH FRESH TOKEN ON EVERY REQUEST
+    const reqInterceptor = axiosSecure.interceptors.request.use(
+      async (config) => {
+        if (user) {
+          try {
+            // Get fresh token for every request
+            const freshToken = await user.getIdToken();
+            config.headers.Authorization = `Bearer ${freshToken}`;
+            console.log("✅ Token added to request:", config.url);
+          } catch (error) {
+            console.error("❌ Error getting token:", error);
+          }
+        } else {
+          console.log("⚠️ No user, skipping auth header");
         }
-      } else {
-        setToken(null);
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
       }
-    };
-
-    getToken();
-  }, [user]);
-
-  useEffect(() => {
-    // intercept request
-    const reqInterceptor = axiosSecure.interceptors.request.use((config) => {
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    });
+    );
 
     // interceptor response
     const resInterceptor = axiosSecure.interceptors.response.use(
       (response) => {
+        console.log("✅ Response from:", response.config.url, response.status);
         return response;
       },
       (error) => {
-        console.log("Axios Error:", error);
+        console.log("❌ Axios Error:", error.message);
+        console.log("❌ Status:", error.response?.status);
+        console.log("❌ Data:", error.response?.data);
 
         const statusCode = error.response?.status;
         if (statusCode === 401 || statusCode === 403) {
+          console.log("🚪 Unauthorized - logging out");
           logOut().then(() => {
             navigate("/login");
           });
@@ -62,7 +61,7 @@ const UseAxiosSecure = () => {
       axiosSecure.interceptors.request.eject(reqInterceptor);
       axiosSecure.interceptors.response.eject(resInterceptor);
     };
-  }, [token, logOut, navigate]);
+  }, [user, logOut, navigate]);
 
   return axiosSecure;
 };
