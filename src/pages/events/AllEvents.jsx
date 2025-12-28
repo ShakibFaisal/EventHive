@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import UseAxiosSecure from "../../hooks/UseAxiosSecure";
+import api from "../../utils/api";
 
 import EventCard from "../../componets/Event/EventCard";
 import NoEventFound from "../../componets/Event/NoEventFound";
@@ -9,7 +9,6 @@ import Loading from "../../componets/Shared/Loading";
 const ITEMS_PER_PAGE = 12;
 
 const AllEvents = () => {
-  const axiosSecure = UseAxiosSecure();
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [priceSort, setPriceSort] = useState("");
@@ -18,7 +17,7 @@ const AllEvents = () => {
   const { data: eventsRaw = [], isLoading } = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
-      const res = await axiosSecure.get("/events");
+      const res = await api.get("/events");
       return res.data;
     },
   });

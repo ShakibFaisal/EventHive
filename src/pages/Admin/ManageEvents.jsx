@@ -14,29 +14,33 @@ const ManageEvents = () => {
     },
   });
 
-  // Handle Reject
-  const handleReject = (event) => {
+  // Handle Delete
+  const handleDelete = (event) => {
     Swal.fire({
-      title: "Reject Event?",
-      text: "This event will be marked as rejected.",
+      title: "Delete Event?",
+      text: "This will permanently remove the event.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#ef4444",
       cancelButtonColor: "#6b7280",
-      confirmButtonText: "Yes, Reject",
+      confirmButtonText: "Yes, Delete",
       customClass: {
         popup: "rounded-2xl",
         confirmButton: "rounded-xl",
         cancelButton: "rounded-xl",
       },
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        axiosSecure.patch(`/events/reject/${event._id}`).then((res) => {
-          if (res.data.modifiedCount > 0) {
+        try {
+          const res = await axiosSecure.delete(
+            `/events/admin-manager/${event._id}`
+          );
+          if (res.data._id || res.data) {
             refetch();
             Swal.fire({
-              title: "Rejected",
-              icon: "info",
+              title: "Deleted!",
+              text: "Event has been removed.",
+              icon: "success",
               confirmButtonColor: "#000",
               customClass: {
                 popup: "rounded-2xl",
@@ -44,7 +48,17 @@ const ManageEvents = () => {
               },
             });
           }
-        });
+        } catch (error) {
+          Swal.fire({
+            title: "Error!",
+            text: error.response?.data?.message || "Failed to delete event.",
+            icon: "error",
+            customClass: {
+              popup: "rounded-2xl",
+              confirmButton: "rounded-xl",
+            },
+          });
+        }
       }
     });
   };
@@ -116,9 +130,9 @@ const ManageEvents = () => {
                   {/* Action Buttons only if pending (Optional Logic) */}
                   <div className="flex items-center justify-end gap-2">
                     <button
-                      onClick={() => handleReject(event)}
+                      onClick={() => handleDelete(event)}
                       className="p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors border border-red-100"
-                      title="Delete User"
+                      title="Delete Event"
                     >
                       <Trash2 size={16} />
                     </button>
