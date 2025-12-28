@@ -138,10 +138,10 @@ const Login = () => {
                 <button className="btn btn-primary w-full mt-6">Login</button>
               </fieldset>
             </form>
-            <SocialLogin redirectTo={location?.state} />
+            <SocialLogin></SocialLogin>
 
             <p className="py-4 text-center">
-              New to EventHive?{" "}
+              New to EventHive?{' '}
               <Link
                 state={location?.state}
                 to="/register"

@@ -1,7 +1,7 @@
-import React from "react";
-import { useNavigate } from "react-router";
-import useAuth from "../../hooks/useAuth";
-import axios from "axios";
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router';
+import useAuth from '../../hooks/useAuth';
+import axios from 'axios';
 
 const SocialLogin = ({ redirectTo }) => {
   const { googleLogin } = useAuth();
@@ -16,27 +16,27 @@ const SocialLogin = ({ redirectTo }) => {
           name: result.user.displayName,
           email: result.user.email,
           photoURL: result.user.photoURL,
-          role: "user",
-          status: "verified",
+          role: 'user',
+          status: 'verified',
         };
 
         axios
-          .post("https://event-hive-server-team.vercel.app/users", userInfo, {
+          .post('https://event-hive-server-team.vercel.app/users', userInfo, {
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
           })
-          .then((res) => {
-            console.log("user data has been stored", res.data);
-            navigate(redirectTo || "/");
+          .then(res => {
+            console.log('user data has been stored', res.data);
+            navigate(location.state || '/');
           })
-          .catch((err) => {
+          .catch(err => {
             console.log(
-              "Error saving user:",
+              'Error saving user:',
               err.response?.data || err.message
             );
             // Still navigate even if user already exists
-            navigate(redirectTo || "/");
+            navigate(location.state || '/');
           });
       })
       .catch((error) => {
