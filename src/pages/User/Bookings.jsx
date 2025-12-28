@@ -25,28 +25,31 @@ const Bookings = () => {
     },
   });
 
-  // =======================
-  // CANCEL BOOKING
-  // =======================
+  // ২. বুকিং ক্যানসেল ফাংশন
   const handleCancel = (id) => {
     Swal.fire({
       title: "Cancel Booking?",
       text: "Refund will be calculated based on event date.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, Cancel",
       confirmButtonColor: "#ef4444",
       cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, Cancel it!",
+      customClass: {
+        popup: "rounded-2xl",
+        confirmButton: "rounded-xl",
+        cancelButton: "rounded-xl",
+      },
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           const res = await axiosSecure.delete(`/bookings/${id}`);
-
-          if (res.data.success) {
+          if (res.data.success || res.data.message) {
             refetch();
 
             Swal.fire({
-              title: "Booking Cancelled ✅",
+              title: "Cancelled!",
+              text: res.data.message || "Your ticket has been cancelled.",
               icon: "success",
               html: `
                 <div style="text-align:left;font-size:14px">
@@ -62,15 +65,18 @@ const Bookings = () => {
                 </div>
               `,
               confirmButtonColor: "#10b981",
+              customClass: {
+                popup: "rounded-2xl",
+                confirmButton: "rounded-xl",
+              },
             });
           }
         } catch (error) {
           Swal.fire({
-            title: "Cancellation Failed",
-            text:
-              error.response?.data?.message ||
-              "Something went wrong during cancellation.",
+            title: "Error!",
+            text: error.response?.data?.message || "Failed to cancel booking.",
             icon: "error",
+            customClass: { popup: "rounded-2xl", confirmButton: "rounded-xl" },
           });
         }
       }
@@ -89,61 +95,80 @@ const Bookings = () => {
   }
 
   return (
-    <div className="w-full bg-white rounded-2xl border shadow-md overflow-hidden">
-      
-      {/* HEADER */}
-      <div className="p-6 border-b flex items-center justify-between">
+    <div className="w-full bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-100/50 overflow-hidden">
+      {/* Header Section */}
+      <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">
+          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
             My Confirmed Tickets
           </h2>
-          <p className="text-sm text-gray-500">
-            Cancel tickets with refund policy
+          <p className="text-sm text-gray-500 mt-1">
+            Manage your upcoming event bookings
           </p>
+        </div>
+        <div className="bg-emerald-50 p-2 rounded-lg text-emerald-600">
+          <Ticket size={24} />
         </div>
         <Ticket size={26} className="text-emerald-600" />
       </div>
 
       {/* EMPTY */}
       {bookings.length === 0 ? (
-        <div className="py-16 text-center text-gray-500">
-          No confirmed bookings found.
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="bg-gray-50 p-4 rounded-full mb-4">
+            <Ticket size={32} className="text-gray-300" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900">
+            No tickets found
+          </h3>
+          <p className="text-gray-500 text-sm mt-1">
+            You haven't booked any confirmed events yet.
+          </p>
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="px-6 py-3 text-xs uppercase text-gray-400">#</th>
-                <th className="px-6 py-3 text-xs uppercase text-gray-400">
-                  Event
+          <table className="w-full text-left border-collapse">
+            {/* Head */}
+            <thead>
+              <tr className="bg-gray-50/50 border-b border-gray-100">
+                <th className="px-6 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  #
                 </th>
-                <th className="px-6 py-3 text-xs uppercase text-gray-400">
+                <th className="px-6 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                  Event Details
+                </th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Date
                 </th>
-                <th className="px-6 py-3 text-xs uppercase text-gray-400">
+                <th className="px-6 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                   Price
                 </th>
-                <th className="px-6 py-3 text-xs uppercase text-gray-400 text-right">
+                <th className="px-6 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">
                   Action
                 </th>
               </tr>
             </thead>
 
-            <tbody className="divide-y">
+            {/* Body */}
+            <tbody className="divide-y divide-gray-100">
               {bookings.map((item, index) => (
-                <tr key={item._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-gray-500">
+                <tr
+                  key={item._id}
+                  className="group hover:bg-gray-50/50 transition-colors duration-200"
+                >
+                  <td className="px-6 py-4 text-sm text-gray-500 font-medium">
                     {(index + 1).toString().padStart(2, "0")}
                   </td>
 
                   <td className="px-6 py-4">
-                    <div className="flex gap-3 items-center">
-                      <img
-                        src={item.image}
-                        alt="event"
-                        className="w-12 h-12 rounded-xl object-cover"
-                      />
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <img
+                          src={item.eventImage}
+                          alt="Event"
+                          className="w-12 h-12 rounded-xl object-cover border border-gray-100 shadow-sm group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
                       <div>
                         <p className="font-semibold">{item.eventName}</p>
                         <p className="text-xs text-gray-500 flex gap-1">
@@ -154,15 +179,21 @@ const Bookings = () => {
                     </div>
                   </td>
 
-                  <td className="px-6 py-4 text-sm">
-                    <div className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-lg w-fit">
-                      <CalendarDays size={14} />
-                      {new Date(item.eventDate).toLocaleDateString()}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2 text-sm text-gray-600 font-medium bg-gray-50 px-3 py-1 rounded-lg w-fit">
+                      <CalendarDays size={14} className="text-gray-400" />
+                      {new Date(item.eventDate).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </div>
                   </td>
 
-                  <td className="px-6 py-4 font-bold">
-                    ${item.price}
+                  <td className="px-6 py-4">
+                    <span className="font-bold text-gray-900">
+                      ${item.price}
+                    </span>
                   </td>
 
                   <td className="px-6 py-4 text-right">

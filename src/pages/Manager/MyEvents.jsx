@@ -4,10 +4,12 @@ import { Trash2, Edit, Calendar, MapPin, Layers } from "lucide-react";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 import { Link } from "react-router"; // or 'react-router-dom'
+import Loading from "../../componets/Shared/Loading";
 
 const MyEvents = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
+ 
 
   // Fetch Data
   const { data: events = [], refetch, isLoading } = useQuery({
@@ -51,7 +53,7 @@ const MyEvents = () => {
     });
   };
 
-  if (isLoading) return <div className="text-center py-20">Loading...</div>;
+  if (isLoading) return <Loading></Loading>;
 
   return (
     <div className="w-full bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-100/50 overflow-hidden">

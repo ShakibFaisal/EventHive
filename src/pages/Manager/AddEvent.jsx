@@ -7,6 +7,8 @@ import {
   Type,
   DollarSign,
   FileText,
+  Tag,
+  Users,
 } from "lucide-react";
 import useAuth from "../../hooks/useAuth";
 import UseAxiosSecure from "../../hooks/UseAxiosSecure";
@@ -24,6 +26,8 @@ const AddEvent = () => {
   const onSubmit = async (data) => {
     const eventData = {
       ...data,
+      price: Number(data.price),
+      totalSeats: Number(data.totalSeats),
       organizerEmail: user?.email,
       organizerName: user?.displayName,
       organizerPhoto: user?.photoURL,
@@ -32,7 +36,8 @@ const AddEvent = () => {
 
     try {
       const res = await axiosSecure.post("/events", eventData);
-      if (res.data.insertedId) {
+      // Backend returns the created document with _id
+      if (res.data._id) {
         reset();
         Swal.fire({
           title: "Success!",
@@ -44,6 +49,12 @@ const AddEvent = () => {
       }
     } catch (error) {
       console.error(error);
+      Swal.fire({
+        title: "Error!",
+        text: error.response?.data?.message || "Failed to create event.",
+        icon: "error",
+        customClass: { popup: "rounded-2xl", confirmButton: "rounded-xl" },
+      });
     }
   };
 
@@ -71,29 +82,60 @@ const AddEvent = () => {
       {/* Form */}
       <div className="p-8">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Row 1: Name & Price */}
+          {/* Row 1: Title & Category */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className={labelClass}>Event Name</label>
+              <label className={labelClass}>Event Title</label>
               <div className="relative">
                 <Type
                   className="absolute left-3 top-3.5 text-gray-400"
                   size={16}
                 />
                 <input
-                  {...register("name", { required: true })}
+                  {...register("title", { required: true })}
                   type="text"
                   placeholder="e.g. Tech Conference 2024"
                   className={`${inputClass} pl-10`}
                 />
               </div>
-              {errors.name && (
+              {errors.title && (
                 <span className="text-red-500 text-xs mt-1">
-                  Name is required
+                  Title is required
                 </span>
               )}
             </div>
 
+            <div>
+              <label className={labelClass}>Category</label>
+              <div className="relative">
+                <Tag
+                  className="absolute left-3 top-3.5 text-gray-400"
+                  size={16}
+                />
+                <select
+                  {...register("category", { required: true })}
+                  className={`${inputClass} pl-10`}
+                >
+                  <option value="">Select Category</option>
+                  <option value="Conference">Conference</option>
+                  <option value="Workshop">Workshop</option>
+                  <option value="Seminar">Seminar</option>
+                  <option value="Concert">Concert</option>
+                  <option value="Sports">Sports</option>
+                  <option value="Meetup">Meetup</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              {errors.category && (
+                <span className="text-red-500 text-xs mt-1">
+                  Category is required
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Row 2: Price & Date */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className={labelClass}>Price ($)</label>
               <div className="relative">
@@ -109,9 +151,18 @@ const AddEvent = () => {
                 />
               </div>
             </div>
+
+            <div>
+              <label className={labelClass}>Event Date</label>
+              <input
+                {...register("date", { required: true })}
+                type="date"
+                className={inputClass}
+              />
+            </div>
           </div>
 
-          {/* Row 2: Image URL & Date */}
+          {/* Row 3: Image URL & Location */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className={labelClass}>Image URL</label>
@@ -130,18 +181,6 @@ const AddEvent = () => {
             </div>
 
             <div>
-              <label className={labelClass}>Event Date</label>
-              <input
-                {...register("date", { required: true })}
-                type="date"
-                className={inputClass}
-              />
-            </div>
-          </div>
-
-          {/* Row 3: Location */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
               <label className={labelClass}>Location</label>
               <div className="relative">
                 <MapPin
@@ -156,17 +195,21 @@ const AddEvent = () => {
                 />
               </div>
             </div>
+          </div>
+
+          {/* Row 4: Total Seats */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className={labelClass}>Total Seats</label>
               <div className="relative">
-                <MapPin
+                <Users
                   className="absolute left-3 top-3.5 text-gray-400"
                   size={16}
                 />
                 <input
                   {...register("totalSeats", { required: true })}
                   type="number"
-                  placeholder="10/20"
+                  placeholder="100"
                   className={`${inputClass} pl-10`}
                 />
               </div>
