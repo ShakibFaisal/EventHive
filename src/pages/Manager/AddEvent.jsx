@@ -8,12 +8,12 @@ import {
   DollarSign,
   FileText,
 } from "lucide-react";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
+import UseAxiosSecure from "../../hooks/UseAxiosSecure";
 
 const AddEvent = () => {
   const { user } = useAuth();
-  const axiosSecure = useAxiosSecure();
+  const axiosSecure = UseAxiosSecure();
   const {
     register,
     handleSubmit,

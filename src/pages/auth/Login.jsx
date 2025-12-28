@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Link, useLocation, useNavigate } from 'react-router';
-import useAuth from '../../hooks/useAuth';
-import { Eye, EyeOff } from 'lucide-react';
-import SocialLogin from './SocialLogin';
-import Swal from 'sweetalert2';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useLocation, useNavigate } from "react-router";
+import useAuth from "../../hooks/useAuth";
+import { Eye, EyeOff } from "lucide-react";
+import SocialLogin from "./SocialLogin";
+import Swal from "sweetalert2";
 
 const Login = () => {
   const {
@@ -18,25 +18,25 @@ const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = data => {
+  const handleLogin = (data) => {
     signIn(data.email, data.password)
       .then(() => {
-        navigate(location?.state || '/');
+        navigate(location?.state || "/");
       })
-      .catch(error => console.log(error));
+      .catch((error) => console.log(error));
   };
 
   const handleForgetPassword = async () => {
     const { value: email } = await Swal.fire({
-      title: 'Reset Password',
-      input: 'email',
-      inputLabel: 'Enter your email address',
-      inputPlaceholder: 'example@email.com',
+      title: "Reset Password",
+      input: "email",
+      inputLabel: "Enter your email address",
+      inputPlaceholder: "example@email.com",
       showCancelButton: true,
-      confirmButtonText: 'Send Reset Link',
-      inputValidator: value => {
+      confirmButtonText: "Send Reset Link",
+      inputValidator: (value) => {
         if (!value) {
-          return 'Email is required';
+          return "Email is required";
         }
       },
     });
@@ -47,15 +47,15 @@ const Login = () => {
       await forgetPass(email);
 
       Swal.fire({
-        icon: 'success',
-        title: 'Email Sent',
-        text: 'Check your inbox for the password reset link.',
+        icon: "success",
+        title: "Email Sent",
+        text: "Check your inbox for the password reset link.",
       });
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'Failed',
-        text: error?.message || 'Could not send reset email',
+        icon: "error",
+        title: "Failed",
+        text: error?.message || "Could not send reset email",
       });
     }
   };
@@ -82,7 +82,7 @@ const Login = () => {
                 <label className="label text-base-content">Email</label>
                 <input
                   type="email"
-                  {...register('email', { required: true })}
+                  {...register("email", { required: true })}
                   className="input input-bordered w-full bg-base-100"
                   placeholder="Your Email"
                 />
@@ -94,8 +94,8 @@ const Login = () => {
                 <label className="label text-base-content mt-2">Password</label>
                 <div className="relative">
                   <input
-                    type={showPassword ? 'text' : 'password'}
-                    {...register('password', {
+                    type={showPassword ? "text" : "password"}
+                    {...register("password", {
                       required: true,
                       minLength: 6,
                       pattern: /^(?=.*[a-z])(?=.*[A-Z]).+$/,
@@ -112,15 +112,15 @@ const Login = () => {
                   </button>
                 </div>
 
-                {errors.password?.type === 'required' && (
+                {errors.password?.type === "required" && (
                   <p className="text-red-500">Password is required</p>
                 )}
-                {errors.password?.type === 'minLength' && (
+                {errors.password?.type === "minLength" && (
                   <p className="text-red-500">
                     Password must be at least 6 characters
                   </p>
                 )}
-                {errors.password?.type === 'pattern' && (
+                {errors.password?.type === "pattern" && (
                   <p className="text-red-500">
                     Password must be include uppercase, lowercase letters
                   </p>
@@ -137,19 +137,19 @@ const Login = () => {
 
                 <button className="btn btn-primary w-full mt-6">Login</button>
               </fieldset>
-              <SocialLogin></SocialLogin>
-
-              <p className="py-4 text-center">
-                New to EventHive?{' '}
-                <Link
-                  state={location?.state}
-                  to="/register"
-                  className="text-[#80ba21] underline"
-                >
-                  Register
-                </Link>
-              </p>
             </form>
+            <SocialLogin redirectTo={location?.state} />
+
+            <p className="py-4 text-center">
+              New to EventHive?{" "}
+              <Link
+                state={location?.state}
+                to="/register"
+                className="text-[#80ba21] underline"
+              >
+                Register
+              </Link>
+            </p>
           </div>
         </div>
       </div>

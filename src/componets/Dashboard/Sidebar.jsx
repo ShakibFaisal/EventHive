@@ -146,16 +146,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
             </div>
 
             <NavLink
-              to="/dashboard/manager-stats"
-              className={linkClass}
-              title="Admin Home"
-            >
-              <span className="text-xl">
-                <House size={20} />
-              </span>
-              {!isCollapsed && <span className="text-sm">Manger Home</span>}
-            </NavLink>
-            <NavLink
               to="/dashboard/add-event"
               className={linkClass}
               title="Manage Users"

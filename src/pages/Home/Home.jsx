@@ -13,7 +13,6 @@ const Home = () => {
   return (
     <div>
       <HeroSlider />
-      <SearchBox />
       <StatsSection />
       <FeaturedEvents />
       <OrganizerSpotlight />

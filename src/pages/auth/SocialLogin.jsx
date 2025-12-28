@@ -1,11 +1,10 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import useAuth from "../../hooks/useAuth";
 import axios from "axios";
 
-const SocialLogin = () => {
+const SocialLogin = ({ redirectTo }) => {
   const { googleLogin } = useAuth();
-  const location = useLocation();
   const navigate = useNavigate();
 
   const handleGoogleSignIn = () => {
@@ -29,7 +28,7 @@ const SocialLogin = () => {
           })
           .then((res) => {
             console.log("user data has been stored", res.data);
-            navigate(location.state || "/");
+            navigate(redirectTo || "/");
           })
           .catch((err) => {
             console.log(
@@ -37,7 +36,7 @@ const SocialLogin = () => {
               err.response?.data || err.message
             );
             // Still navigate even if user already exists
-            navigate(location.state || "/");
+            navigate(redirectTo || "/");
           });
       })
       .catch((error) => {

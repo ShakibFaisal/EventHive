@@ -1,42 +1,121 @@
 import React from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams, useLocation } from "react-router";
 import UseAxiosSecure from "../../hooks/UseAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import Loading from "../../componets/Shared/Loading";
 import Swal from "sweetalert2";
-import Magnet from "../../componets/Shared/Magnet";
+import useAuth from "../../hooks/useAuth";
 
 const EventDetails = () => {
   const { id } = useParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const axiosSecure = UseAxiosSecure();
+
   const { data: event = [], isLoading } = useQuery({
-    queryKey: ["events"],
+    queryKey: ["events", id],
     queryFn: async () => {
       const res = await axiosSecure.get(`/events/${id}`);
       return res.data;
     },
   });
 
+  // check if current user already has a confirmed booking for this event
+  const { data: myBookings = [], refetch: refetchBookings } = useQuery({
+    queryKey: ["my-bookings", user?.email],
+    enabled: !!user?.email,
+    staleTime: 0, // Always refetch to get latest booking status
+    refetchOnMount: "always",
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/bookings/${user?.email}`);
+      return res.data || [];
+    },
+  });
+
+  const isBooked = !!myBookings.find(
+    (b) => String(b.eventId) === String(event?._id) && b.status === "confirmed"
+  );
+
   if (isLoading) return <Loading />;
-  const handlebook = () => {
+
+  console.log(event);
+
+  const handlebook = async () => {
+    // ১. চেক করুন ইউজার আছে কিনা
+    if (!user) {
+      navigate("/login", { state: location.pathname });
+      return;
+    }
+
+    // Already booked check
+    if (isBooked) {
+      Swal.fire({
+        title: "Already Booked!",
+        text: "You have already booked this event.",
+        icon: "info",
+      });
+      return;
+    }
+
+    // ২. কনফার্মেশন মডাল ওপেন করা
     Swal.fire({
       title: "Are you sure?",
-      text: `You  have to pay ৳ ${event.price} for booking this event.`,
+      text: `You have to pay ৳ ${event.price} for booking this event.`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText:"Pay Now",
-    }).then((result) => {
+      confirmButtonText: "Pay Now",
+    }).then(async (result) => {
+      // ৩. ইউজার যদি "Pay Now" তে ক্লিক করে
       if (result.isConfirmed) {
-        Swal.fire({
-          title: "Paid!",
-          text: "Your booking is confirmed.",
-          icon: "success",
-        });
+        try {
+          // পেমেন্ট প্রসেস হওয়ার সময় লোডিং দেখানোর জন্য
+          Swal.fire({
+            title: "Processing...",
+            text: "Redirecting to payment gateway...",
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+
+          // পেমেন্ট ইনফো রেডি করা
+          const paymentInfo = {
+            eventId: event?._id,
+            eventName: event?.title,
+            eventDate: event?.date,
+            userEmail: user?.email,
+            userName: user?.displayName,
+            image: event?.image, // event er image pathano better
+            price: event?.price,
+          };
+
+          // ব্যাকএন্ডে রিকোয়েস্ট পাঠানো
+          const { data } = await axiosSecure.post(
+            `/bookings/create-checkout-session`,
+            paymentInfo
+          );
+
+          // ৪. পেমেন্ট লিংকে রিডাইরেক্ট করা
+          if (data?.url) {
+            window.location.href = data.url;
+          }
+        } catch (error) {
+          console.error("Payment Error:", error);
+          Swal.fire({
+            title: "Error!",
+            text:
+              error.response?.data?.error ||
+              "Something went wrong initiating payment.",
+            icon: "error",
+          });
+        }
       }
     });
   };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-10 mt-[100px]">
       {/* Event Image */}
@@ -66,7 +145,7 @@ const EventDetails = () => {
         </div>
 
         {/* Booking Card */}
-        <Magnet> <div className="border rounded-2xl p-6 shadow-md space-y-4">
+        <div className="border rounded-2xl p-6 shadow-md space-y-4">
           <h2 className="text-xl font-semibold">Event Info</h2>
 
           <div className="flex justify-between text-sm">
@@ -88,12 +167,20 @@ const EventDetails = () => {
 
           <button
             onClick={handlebook}
-            className="btn btn-block rounded-full bg-black text-white hover:bg-gray-800 transition-all"
+            disabled={isBooked || event.availableSeats <= 0}
+            className={`btn btn-block rounded-full transition-all ${
+              isBooked || event.availableSeats <= 0
+                ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                : "bg-black text-white hover:bg-gray-800"
+            }`}
           >
-            Book Now
+            {isBooked
+              ? "Already Booked"
+              : event.availableSeats <= 0
+              ? "Sold Out"
+              : "Book Now"}
           </button>
-        </div></Magnet>
-       
+        </div>
       </div>
 
       {/* Organizer */}

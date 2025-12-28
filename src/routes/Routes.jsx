@@ -4,7 +4,6 @@ import NotFound from "../pages/NotFound";
 import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/Home/Home";
 import EventDetails from "../pages/events/EventDetails";
-import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 import DashboardLayout from "../layouts/DashboardLayout";
 import UserDashboard from "../pages/Dashboard/UserDashboard";
@@ -19,8 +18,9 @@ import AdminStats from "../pages/Admin/AdminStats";
 import ManageUsers from "../pages/Admin/ManageUsers";
 import AdminAllEvents from "../pages/Admin/AdminAllEvents";
 import AllEvents from "../pages/events/AllEvents";
-import ManagerStats from "../pages/Manager/ManagerStats";
 import MyEvents from "../pages/Manager/MyEvents";
+import Login from "../pages/auth/Login";
+import PaymentSuccess from "../pages/events/paymentsuccess";
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +56,10 @@ export const router = createBrowserRouter([
         path: "contact",
         element: <Contact />,
       },
+      {
+        path: "payment-success",
+        element: <PaymentSuccess />,
+      },
     ],
   },
   {
@@ -82,10 +86,7 @@ export const router = createBrowserRouter([
         path: "add-event",
         element: <AddEvent />,
       },
-      {
-        path: "manager-stats",
-        element: <ManagerStats />,
-      },
+
       {
         path: "my-events",
         element: <MyEvents />,

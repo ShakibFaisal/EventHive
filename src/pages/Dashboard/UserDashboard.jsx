@@ -8,12 +8,12 @@ import {
   FaTicketAlt,
   FaArrowRight
 } from "react-icons/fa";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
+import UseAxiosSecure from "../../hooks/UseAxiosSecure";
 
 const UserDashboard = () => {
   const { user } = useAuth();
-  const axiosSecure = useAxiosSecure();
+  const axiosSecure = UseAxiosSecure();
 
   // ১. ডাটা লোড করা (সব বুকিং) - লজিক অপরিবর্তিত
   const { data: bookings = [] } = useQuery({

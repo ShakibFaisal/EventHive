@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../hooks/useAuth";
 import {
   Edit,
@@ -7,113 +7,119 @@ import {
   XCircle,
   Calendar,
   Ticket,
+  ShieldCheck,
+  UserCheck,
+  Users,
+  Loader2,
 } from "lucide-react";
-import UseAxiosSecure from "../../hooks/UseAxiosSecure";
 import Swal from "sweetalert2";
+import UseAxiosSecure from "../../hooks/UseAxiosSecure";
 
 const ProfileCard = () => {
-  const { user: authUser } = useAuth() || {};
-  const [role, setRole] = useState("user");
-  const [status, setStatus] = useState(authUser?.status || "verified");
+  const { user: authUser, loading: authLoading } = useAuth();
   const axiosSecure = UseAxiosSecure();
 
+  // 1. Fetch User Data with Loading State
+  const {
+    data: userData,
+    isLoading: dataLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["user-profile", authUser?.email],
+    enabled: !!authUser?.email && !authLoading, // Auth ready হওয়ার পর কল হবে
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/users/${authUser?.email}`);
+      console.log("DB User Data:", res.data); // 🔍 Check Console for this
+      return res.data;
+    },
+  });
+
+  // 2. Loading Spinner (খুবই জরুরি)
+  // ডাটা না আসা পর্যন্ত লোডিং দেখাবে, তাই ভুল ভাল রোল দেখাবে না
+  // if (authLoading || dataLoading) {
+  //   return (
+  //     <div className="min-h-screen flex justify-center items-center bg-[#F9FAFB]">
+  //       <Loader2 className="animate-spin text-gray-400 w-10 h-10" />
+  //     </div>
+  //   );
+  // }
+
+  // 3. User Object Creation (Safe Merge)
   const user = {
-    displayName: authUser?.displayName || "Draco Malfoy",
-    email: authUser?.email || "draco.malfoy@hogwarts.edu",
-    photoURL:
-      authUser?.photoURL ||
-      "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp",
-    uid: authUser?.uid || "USER_123456",
-    status: status,
+    displayName: userData?.name || authUser?.displayName || "User",
+    email: userData?.email || authUser?.email,
+    photoURL: userData?.image || authUser?.photoURL,
+    uid: userData?._id || authUser?.uid,
+    role: userData?.role || "user",
+    status: userData?.status || "verified",
+    totalBookings: userData?.totalBookings || 0,
+    totalEvents: userData?.totalEvents || 0,
   };
 
+  // 4. Role Theme Configuration
   const roleTheme = {
     admin: {
-      text: "text-red-600",
-      bg: "bg-red-50",
-      border: "border-red-100",
-      ring: "ring-red-50",
+      text: "text-purple-600",
+      bg: "bg-purple-50",
+      border: "border-purple-100",
+      ring: "ring-purple-50",
+      label: "Admin",
+      icon: ShieldCheck,
     },
-    "event-manager": {
+    manager: {
       text: "text-blue-600",
       bg: "bg-blue-50",
       border: "border-blue-100",
       ring: "ring-blue-50",
+      label: "Organizer", // Label change for manager
+      icon: UserCheck,
     },
     user: {
       text: "text-emerald-600",
       bg: "bg-emerald-50",
       border: "border-emerald-100",
       ring: "ring-emerald-50",
+      label: "User",
+      icon: Users,
     },
   };
 
-  const currentTheme = roleTheme[role];
+  // Fallback to 'user' theme if role doesn't match
+  const currentTheme = roleTheme[user.role] || roleTheme.user;
+  const RoleIcon = currentTheme.icon;
 
-  // PATCH request to request manager access
   const handleRequest = async () => {
     try {
       const res = await axiosSecure.patch(
-        `/users/request-manager/${user?.email}`
+        `/users/request-manager/${user.email}`
       );
-      if (res.data.modifiedCount > 0 || res.data.status === "requested") {
-        setStatus("requested");
-        Swal.fire(
-          "Request Sent!",
-          "Your request to become a manager has been sent.",
-          "success"
-        );
-      } else if (res.data.message === "Already requested") {
-        setStatus("requested");
-        Swal.fire(
-          "Already Requested",
-          "You have already requested manager access.",
-          "info"
-        );
-      } else {
-        Swal.fire("Error", "Could not send request. Try again later.", "error");
+      if (res.data.modifiedCount > 0) {
+        refetch();
+        Swal.fire({
+          title: "Success",
+          text: "Request sent successfully!",
+          icon: "success",
+        });
       }
     } catch (err) {
-      Swal.fire(
-        "Error",
-        err.response?.data?.message || "Could not send request.",
-        "error"
-      );
+      console.error(err);
     }
   };
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] flex flex-col items-center justify-center py-10 px-4 font-sans">
-      {/* --- Developer Controls (Clean Style) --- */}
-      <div className="mb-6 p-2 bg-white rounded-full border border-gray-200 shadow-sm flex gap-2">
-        {["user", "event-manager", "admin"].map((r) => (
-          <button
-            key={r}
-            onClick={() => setRole(r)}
-            className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-all capitalize ${
-              role === r
-                ? "bg-black text-white"
-                : "text-gray-500 hover:bg-gray-100"
-            }`}
-          >
-            {r.replace("-", " ")}
-          </button>
-        ))}
-      </div>
-
-      {/* --- MAIN CARD --- */}
-      <div className="w-full max-w-md bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/50 overflow-hidden">
-        {/* 1. Subtle Top Banner */}
+      <div className="w-full max-w-md bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/50 overflow-hidden relative">
+        {/* Banner */}
         <div className="h-32 bg-gradient-to-b from-gray-50 to-white border-b border-gray-50 relative">
-          <div className="absolute top-4 right-4 px-3 py-1 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full text-[10px] font-bold text-gray-400 uppercase tracking-wider shadow-sm">
-            ID: {user.uid.slice(0, 8)}...
+          <div className="absolute top-4 right-4 px-3 py-1 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full text-[10px] font-bold text-gray-400 uppercase tracking-wider shadow-sm font-mono">
+            ID: {user.uid?.slice(-6) || "N/A"}
           </div>
         </div>
 
-        {/* 2. Content Container */}
+        {/* Content */}
         <div className="px-8 pb-8 -mt-16 relative">
-          {/* Avatar Section */}
           <div className="flex flex-col items-center text-center">
+            {/* Avatar Ring Color based on Role */}
             <div
               className={`p-1.5 rounded-full bg-white ${currentTheme.ring} ring-4 transition-all duration-300`}
             >
@@ -124,91 +130,86 @@ const ProfileCard = () => {
               />
             </div>
 
-            {/* Name & Role */}
             <div className="mt-4 space-y-1">
               <h2 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-2">
                 {user.displayName}
-                {user.status === "verified" && (
-                  <CheckCircle2
-                    size={18}
-                    className="text-blue-500"
-                    fill="currentColor"
-                    color="white"
-                  />
+                {/* Role Icon next to Name */}
+                {user.role === "admin" && (
+                  <ShieldCheck size={18} className="text-purple-500" />
+                )}
+                {user.role === "manager" && (
+                  <CheckCircle2 size={18} className="text-blue-500" />
                 )}
               </h2>
               <p className="text-sm font-medium text-gray-500">{user.email}</p>
 
-              {/* Role Badge */}
+              {/* DYNAMIC ROLE BADGE */}
               <div
-                className={`mt-3 inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${currentTheme.bg} ${currentTheme.text} ${currentTheme.border}`}
+                className={`mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border ${currentTheme.bg} ${currentTheme.text} ${currentTheme.border}`}
               >
-                {role.replace("-", " ")}
+                <RoleIcon size={12} />
+                {currentTheme.label} {/* Dynamic Label */}
               </div>
             </div>
           </div>
 
-          {/* 3. Stats Section (Clean Box) */}
+          {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mt-8 py-4 border-t border-b border-gray-50">
-            <div className="text-center group cursor-default">
-              <div className="flex items-center justify-center w-8 h-8 mx-auto bg-purple-50 text-purple-600 rounded-full mb-1 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                <Ticket size={14} />
-              </div>
-              <span className="block text-lg font-bold text-gray-900">12</span>
-              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
+            {/* Stats Items... (Same as before) */}
+            <div className="text-center">
+              <span className="block text-lg font-bold text-gray-900">0</span>
+              <span className="text-[10px] text-gray-400 font-bold uppercase">
                 Bookings
               </span>
             </div>
-
-            <div className="text-center group cursor-default">
-              <div className="flex items-center justify-center w-8 h-8 mx-auto bg-blue-50 text-blue-600 rounded-full mb-1 group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                {user.status === "verified" ? (
-                  <CheckCircle2 size={14} />
-                ) : (
-                  <XCircle size={14} />
-                )}
-              </div>
-              <span
-                className={`block text-lg font-bold capitalize ${
-                  user.status === "verified" ? "text-gray-900" : "text-red-500"
-                }`}
-              >
+            <div className="text-center">
+              <span className="block text-lg font-bold text-gray-900 capitalize">
                 {user.status}
               </span>
-              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
+              <span className="text-[10px] text-gray-400 font-bold uppercase">
                 Status
               </span>
             </div>
-
-            <div className="text-center group cursor-default">
-              <div className="flex items-center justify-center w-8 h-8 mx-auto bg-orange-50 text-orange-600 rounded-full mb-1 group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                <Calendar size={14} />
-              </div>
-              <span className="block text-lg font-bold text-gray-900">3</span>
-              <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
+            <div className="text-center">
+              <span className="block text-lg font-bold text-gray-900">0</span>
+              <span className="text-[10px] text-gray-400 font-bold uppercase">
                 Events
               </span>
             </div>
           </div>
 
-          {/* 4. Action Buttons */}
+          {/* Actions */}
           <div className="mt-8 space-y-3">
-            <button className="w-full py-3 px-4 bg-gray-900 hover:bg-black text-white text-sm font-semibold rounded-xl shadow-lg shadow-gray-200 transition-all active:scale-95 flex items-center justify-center gap-2">
-              <Edit size={16} />
-              Edit Profile Information
+            <button className="w-full py-3 px-4 bg-gray-900 hover:bg-black text-white text-sm font-semibold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+              <Edit size={16} /> Edit Profile
             </button>
 
-            {role === "user" && (
+            {/* HIDE BUTTON IF NOT USER */}
+            {user.role === "user" && (
               <button
                 onClick={handleRequest}
-                className="w-full py-3 px-4 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2 group"
+                disabled={user.status === "requested"}
+                className={`w-full py-3 px-4 border text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2
+                    ${
+                      user.status === "requested"
+                        ? "bg-gray-50 text-gray-400"
+                        : "bg-white hover:bg-gray-50 text-gray-700"
+                    }`}
               >
-                <Sparkles
-                  size={16}
-                  className="text-yellow-500 group-hover:rotate-12 transition-transform"
-                />
-                Request manager Access
+                {user.status === "requested"
+                  ? "Request Pending..."
+                  : "Request Manager Access"}
               </button>
+            )}
+
+            {/* Show message for Manager/Admin */}
+            {user.role !== "user" && (
+              <div
+                className={`w-full py-3 px-4 text-sm font-bold rounded-xl flex items-center justify-center gap-2 border ${currentTheme.bg} ${currentTheme.text} ${currentTheme.border}`}
+              >
+                <currentTheme.icon size={16} />
+                You are currently an {currentTheme.label}
+              </div>
             )}
           </div>
         </div>

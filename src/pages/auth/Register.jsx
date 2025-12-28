@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Link, useLocation, useNavigate } from 'react-router';
-import axios from 'axios';
-import useAuth from '../../hooks/useAuth';
-import SocialLogin from './SocialLogin';
-import { Eye, EyeOff } from 'lucide-react';
-import Swal from 'sweetalert2';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useLocation, useNavigate } from "react-router";
+import axios from "axios";
+import useAuth from "../../hooks/useAuth";
+import SocialLogin from "./SocialLogin";
+import { Eye, EyeOff } from "lucide-react";
+import Swal from "sweetalert2";
 
 const Register = () => {
   const {
@@ -19,7 +19,7 @@ const Register = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleRegistration = async data => {
+  const handleRegistration = async (data) => {
     try {
       const profileImg = data.photo[0];
 
@@ -28,7 +28,7 @@ const Register = () => {
 
       // 2. Upload image
       const formData = new FormData();
-      formData.append('image', profileImg);
+      formData.append("image", profileImg);
 
       const image_API_URL = `https://api.imgbb.com/1/upload?key=${
         import.meta.env.VITE_image_host_key
@@ -45,31 +45,31 @@ const Register = () => {
         name: data.name,
         email: data.email,
         photoURL,
-        role: 'user',
-        status: 'verified',
+        role: "user",
+        status: "verified",
       };
 
       await axios.post(
-        'https://event-hive-server-team.vercel.app/users',
+        "https://event-hive-server-team.vercel.app/users",
         userInfo
       );
 
       // 5. Navigate
-      navigate(location?.state || '/', { replace: true });
+      navigate(location?.state || "/", { replace: true });
     } catch (error) {
-      let message = 'Something went wrong';
+      let message = "Something went wrong";
 
-      if (error.code === 'auth/email-already-in-use') {
-        message = 'This email is already registered';
-      } else if (error.code === 'auth/weak-password') {
-        message = 'Password is too weak';
-      } else if (error.code === 'auth/invalid-email') {
-        message = 'Invalid email address';
+      if (error.code === "auth/email-already-in-use") {
+        message = "This email is already registered";
+      } else if (error.code === "auth/weak-password") {
+        message = "Password is too weak";
+      } else if (error.code === "auth/invalid-email") {
+        message = "Invalid email address";
       }
 
       Swal.fire({
-        icon: 'error',
-        title: 'Registration Failed',
+        icon: "error",
+        title: "Registration Failed",
         text: message,
       });
     }
@@ -97,7 +97,7 @@ const Register = () => {
                 <label className="label text-base-content">Name</label>
                 <input
                   type="text"
-                  {...register('name', { required: true })}
+                  {...register("name", { required: true })}
                   className="input input-bordered w-full bg-base-100
 "
                   placeholder="Your Name"
@@ -110,7 +110,7 @@ const Register = () => {
                 <label className="label text-base-content mt-2">Email</label>
                 <input
                   type="email"
-                  {...register('email', { required: true })}
+                  {...register("email", { required: true })}
                   className="input input-bordered w-full bg-base-100
 "
                   placeholder="Your Email"
@@ -123,7 +123,7 @@ const Register = () => {
                 <label className="label text-base-content mt-2">Photo</label>
                 <input
                   type="file"
-                  {...register('photo', { required: true })}
+                  {...register("photo", { required: true })}
                   className="file-input file-input-bordered w-full bg-base-100
 "
                 />
@@ -135,8 +135,8 @@ const Register = () => {
                 <label className="label text-base-content mt-2">Password</label>
                 <div className="relative">
                   <input
-                    type={showPassword ? 'text' : 'password'}
-                    {...register('password', {
+                    type={showPassword ? "text" : "password"}
+                    {...register("password", {
                       required: true,
                       minLength: 6,
                       pattern: /^(?=.*[a-z])(?=.*[A-Z]).+$/,
@@ -154,15 +154,15 @@ const Register = () => {
                   </button>
                 </div>
 
-                {errors.password?.type === 'required' && (
+                {errors.password?.type === "required" && (
                   <p className="text-red-500">Password is required</p>
                 )}
-                {errors.password?.type === 'minLength' && (
+                {errors.password?.type === "minLength" && (
                   <p className="text-red-500">
                     Password must be at least 6 characters
                   </p>
                 )}
-                {errors.password?.type === 'pattern' && (
+                {errors.password?.type === "pattern" && (
                   <p className="text-red-500">
                     Password must be include uppercase, lowercase letters
                   </p>
@@ -170,19 +170,20 @@ const Register = () => {
 
                 <button className="btn btn-primary mt-6">Register</button>
               </fieldset>
-              <SocialLogin></SocialLogin>
-
-              <p className="py-4 text-center">
-                Already have an account?{' '}
-                <Link
-                  state={location?.state}
-                  to="/login"
-                  className="text-[#80ba21] underline"
-                >
-                  Login
-                </Link>
-              </p>
             </form>
+
+            <SocialLogin redirectTo={location?.state} />
+
+            <p className="py-4 text-center">
+              Already have an account?{" "}
+              <Link
+                state={location?.state}
+                to="/login"
+                className="text-[#80ba21] underline"
+              >
+                Login
+              </Link>
+            </p>
           </div>
         </div>
       </div>
