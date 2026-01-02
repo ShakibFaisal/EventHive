@@ -41,8 +41,10 @@ const Navbar = () => {
           className={({ isActive }) =>
             `px-6 py-2 rounded-full transition-all duration-300 text-[15px] font-semibold ${
               isActive
-                ? "bg-primary text-primary-content font-bold"
-                : "hover:bg-base-200 text-base-content/80"
+                ? "bg-gradient-to-r from-lime-400 to-emerald-400 text-black font-bold shadow-lg"
+                : isTransparent
+                ? "text-white hover:bg-white/10"
+                : "hover:bg-gray-100 text-base-content/80"
             }`
           }
         >
@@ -55,8 +57,10 @@ const Navbar = () => {
           className={({ isActive }) =>
             `px-6 py-2 rounded-full transition-all duration-300 text-[15px] font-semibold ${
               isActive
-                ? "bg-primary text-primary-content font-bold"
-                : "hover:bg-base-200 text-base-content/80"
+                ? "bg-gradient-to-r from-lime-400 to-emerald-400 text-black font-bold shadow-lg"
+                : isTransparent
+                ? "text-white hover:bg-white/10"
+                : "hover:bg-gray-100 text-base-content/80"
             }`
           }
         >
@@ -69,8 +73,10 @@ const Navbar = () => {
           className={({ isActive }) =>
             `px-6 py-2 rounded-full transition-all duration-300 text-[15px] font-semibold ${
               isActive
-                ? "bg-primary text-primary-content font-bold"
-                : "hover:bg-base-200 text-base-content/80"
+                ? "bg-gradient-to-r from-lime-400 to-emerald-400 text-black font-bold shadow-lg"
+                : isTransparent
+                ? "text-white hover:bg-white/10"
+                : "hover:bg-gray-100 text-base-content/80"
             }`
           }
         >
@@ -83,8 +89,10 @@ const Navbar = () => {
           className={({ isActive }) =>
             `px-6 py-2 rounded-full transition-all duration-300 text-[15px] font-semibold ${
               isActive
-                ? "bg-primary text-primary-content font-bold"
-                : "hover:bg-base-200 text-base-content/80"
+                ? "bg-gradient-to-r from-lime-400 to-emerald-400 text-black font-bold shadow-lg"
+                : isTransparent
+                ? "text-white hover:bg-white/10"
+                : "hover:bg-gray-100 text-base-content/80"
             }`
           }
         >
@@ -97,8 +105,8 @@ const Navbar = () => {
   return (
     <div className="fixed top-4 left-0 right-0 z-50 px-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-        <Link to="/" className={isTransparent ? "text-white" : ""}>
-          <Logo isTransparent={isTransparent} />
+        <Link to="/">
+          <Logo />
         </Link>
 
         <div
@@ -138,7 +146,9 @@ const Navbar = () => {
                 <li>
                   <Link to="/dashboard" className="justify-between">
                     Dashboard
-                    <span className="badge badge-primary badge-sm">New</span>
+                    <span className="badge bg-gradient-to-r from-lime-400 to-emerald-400 text-black border-none badge-sm font-semibold">
+                      New
+                    </span>
                   </Link>
                 </li>
                 <li>
@@ -151,12 +161,12 @@ const Navbar = () => {
               <NavLink
                 to="/login"
                 className={({ isActive }) =>
-                  `px-6 py-2 rounded-full font-medium transition-all duration-300 shadow-md ${
+                  `px-6 py-2 rounded-full font-semibold transition-all duration-300 shadow-md ${
                     isActive
-                      ? "bg-primary text-primary-content"
+                      ? "bg-gradient-to-r from-lime-400 to-emerald-400 text-black"
                       : isTransparent
                       ? "bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm border border-white/20"
-                      : "bg-white text-gray-700 hover:bg-gray-50"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
                   }`
                 }
               >
@@ -169,10 +179,10 @@ const Navbar = () => {
                 className={({ isActive }) =>
                   `px-6 py-2 rounded-full font-semibold transition-all duration-300 shadow-md ${
                     isActive
-                      ? "bg-primary text-primary-content"
+                      ? "bg-gradient-to-r from-lime-400 to-emerald-400 text-black"
                       : isTransparent
                       ? "bg-white text-black hover:bg-gray-100"
-                      : "bg-[#a3e635] text-black hover:bg-black hover:text-[#a3e635] "
+                      : "bg-gradient-to-r from-lime-400 to-emerald-500 text-black hover:from-lime-500 hover:to-emerald-600 shadow-lg"
                   }`
                 }
               >

@@ -15,7 +15,7 @@ const Logo = ({ size = "md", className = "", isTransparent = false }) => {
       {/* Fluid Wave Icon */}
       <div className="w-7">
         <img
-          src="https://i.postimg.cc/hv2Wbqk7/d1814a585348753277d4ea9452de2e01-removebg-preview.png"
+          src="https://i.ibb.co.com/67K5Y7VG/logoipsum-392.webp"
           alt="logo"
           className={isTransparent ? "brightness-0 invert" : ""}
         />
@@ -24,9 +24,7 @@ const Logo = ({ size = "md", className = "", isTransparent = false }) => {
       {/* Text with gradient or white */}
       <span
         className={`font-bold tracking-tight ${currentSize.text} ${
-          isTransparent
-            ? "text-white"
-            : "bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 bg-clip-text text-transparent"
+          isTransparent ? "text-white" : "text-[#a3e635]"
         }`}
       >
         EventHive
