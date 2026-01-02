@@ -24,7 +24,7 @@ const HeroSlider = () => {
       description:
         "Bring your ideas to life and reach a wider audience with our powerful platform",
       buttonText: "Get Started",
-      buttonLink: "/register",
+      buttonLink: "/events",
     },
     {
       id: 3,
@@ -34,7 +34,7 @@ const HeroSlider = () => {
       description:
         "Follow top organizers and never miss out on their latest events",
       buttonText: "Get Started",
-      buttonLink: "/register",
+      buttonLink: "/events",
     },
   ];
 

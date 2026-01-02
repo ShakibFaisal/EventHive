@@ -6,6 +6,8 @@ import useAuth from "../../hooks/useAuth";
 import SocialLogin from "./SocialLogin";
 import { Eye, EyeOff } from "lucide-react";
 import Swal from "sweetalert2";
+import Heading from "../../componets/Shared/heading/Heading";
+import Paragraph from "../../componets/Shared/heading/Paragraph";
 
 const Register = () => {
   const {
@@ -84,12 +86,12 @@ const Register = () => {
             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
             Join EventHive
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 mb-4">
+          <Heading className=" font-bold text-gray-900 ">
             Get Started Today
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          </Heading>
+          <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto">
             Plan smarter. Host better. Join EventHive and transform your events.
-          </p>
+          </Paragraph>
         </div>
 
         {/* Form Center Wrapper */}

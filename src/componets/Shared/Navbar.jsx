@@ -160,6 +160,7 @@ const Navbar = () => {
             <>
               <NavLink
                 to="/login"
+                end
                 className={({ isActive }) =>
                   `px-6 py-2 rounded-full font-semibold transition-all duration-300 shadow-md ${
                     isActive
@@ -182,7 +183,7 @@ const Navbar = () => {
                       ? "bg-gradient-to-r from-lime-400 to-emerald-400 text-black"
                       : isTransparent
                       ? "bg-white text-black hover:bg-gray-100"
-                      : "bg-gradient-to-r from-lime-400 to-emerald-500 text-black hover:from-lime-500 hover:to-emerald-600 shadow-lg"
+                      : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
                   }`
                 }
               >

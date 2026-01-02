@@ -5,6 +5,8 @@ import useAuth from "../../hooks/useAuth";
 import { Eye, EyeOff } from "lucide-react";
 import SocialLogin from "./SocialLogin";
 import Swal from "sweetalert2";
+import Heading from "../../componets/Shared/heading/Heading";
+import Paragraph from "../../componets/Shared/heading/Paragraph";
 
 const Login = () => {
   const {
@@ -69,12 +71,12 @@ const Login = () => {
             <div className="w-2 h-2 bg-lime-500 rounded-full animate-pulse"></div>
             Secure Login
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 mb-4">
+          <Heading className=" font-black text-gray-900 ">
             Welcome Back!
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          </Heading>
+          <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto">
             Log in to manage your events and bookings seamlessly.
-          </p>
+          </Paragraph>
         </div>
 
         {/* Centered Form */}

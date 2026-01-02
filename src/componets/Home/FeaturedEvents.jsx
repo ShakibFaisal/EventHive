@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router";
 import EventCard from "../Event/EventCard";
 import { useQuery } from "@tanstack/react-query";
 import UseAxiosSecure from "../../hooks/UseAxiosSecure";
@@ -92,13 +93,15 @@ const FeaturedEvents = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="btn btn-outline btn-lg rounded-full px-10 bg-[#a3e635] text-black hover:bg-black hover:text-[#a3e635]"
-          >
-            View All Events
-          </motion.button>
+          <Link to="/events">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="btn btn-outline btn-lg rounded-full px-10 bg-[#a3e635] text-black hover:bg-black hover:text-[#a3e635]"
+            >
+              View All Events
+            </motion.button>
+          </Link>
         </motion.div>
       </div>
     </div>
