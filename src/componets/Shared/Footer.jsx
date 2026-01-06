@@ -11,9 +11,7 @@ const Footer = () => {
   return (
     <footer className="bg-gradient-to-b from-white to-gray-50 text-gray-700 pt-10 pb-10 border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-6">
-        {/* Main Content - Logo Left, Nav Right */}
         <div className="flex flex-col lg:flex-row justify-between gap-12 mb-16">
-          {/* Left Side - Logo and Description */}
           <div className="max-w-md">
             <Logo />
             <Paragraph className="text-sm text-gray-600 mt-4">
@@ -21,7 +19,6 @@ const Footer = () => {
               ultimate platform for bringing people together.
             </Paragraph>
 
-            {/* Social Links */}
             <div className="flex gap-4 mt-8">
               <a
                 href="https://x.com/"
@@ -42,7 +39,7 @@ const Footer = () => {
                 <FaLinkedin />
               </a>
               <a
-                href="#"
+                href="https://github.com/siddiquesakib/EventHive"
                 className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-900 hover:text-white transition-all duration-300"
               >
                 <FaGithub />
@@ -50,7 +47,6 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Right Side - Navigation Links */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-x-12 gap-y-8">
             <nav className="flex flex-col gap-3">
               <h6 className="font-bold text-gray-600 mb-2 text-[13px] uppercase tracking-wider">
@@ -126,7 +122,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom Section - Copyright */}
         <div className="text-center">
           <p className="text-sm text-gray-600">
             © {new Date().getFullYear()} EventHive. All rights reserved.

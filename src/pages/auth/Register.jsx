@@ -26,9 +26,12 @@ const Register = () => {
       const profileImg = data.photo[0];
 
       // 1. Firebase user create
-      await createUserEP(data.email, data.password);
+      console.log("Step 1: Creating Firebase user...");
+      const userCredential = await createUserEP(data.email, data.password);
+      console.log("Firebase user created:", userCredential.user.email);
 
       // 2. Upload image
+      console.log("Step 2: Uploading image...");
       const formData = new FormData();
       formData.append("image", profileImg);
 
@@ -38,11 +41,15 @@ const Register = () => {
 
       const imgRes = await axios.post(image_API_URL, formData);
       const photoURL = imgRes.data.data.url;
+      console.log("Image uploaded:", photoURL);
 
       // 3. Firebase profile update
+      console.log("Step 3: Updating Firebase profile...");
       await updateUser(data.name, photoURL);
+      console.log("Firebase profile updated");
 
       // 4. SAVE USER IN MONGODB
+      console.log("Step 4: Saving user to MongoDB...");
       const userInfo = {
         name: data.name,
         email: data.email,
@@ -51,14 +58,26 @@ const Register = () => {
         status: "verified",
       };
 
-      await axios.post(
+      const dbResponse = await axios.post(
         "https://event-hive-server-team.vercel.app/users",
         userInfo
       );
+      console.log("MongoDB response:", dbResponse.data);
 
-      // 5. Navigate
+      // 5. Success Message & Navigate
+      Swal.fire({
+        icon: "success",
+        title: "Registration Successful!",
+        text: "Welcome to EventHive!",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
       navigate(location?.state || "/", { replace: true });
     } catch (error) {
+      console.error("Registration error:", error);
+      console.error("Error details:", error.response?.data || error.message);
+
       let message = "Something went wrong";
 
       if (error.code === "auth/email-already-in-use") {
@@ -67,6 +86,10 @@ const Register = () => {
         message = "Password is too weak";
       } else if (error.code === "auth/invalid-email") {
         message = "Invalid email address";
+      } else if (error.response?.data?.message) {
+        message = error.response.data.message;
+      } else if (error.message) {
+        message = error.message;
       }
 
       Swal.fire({
